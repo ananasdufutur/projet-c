@@ -113,7 +113,10 @@ CDataframe* createCDataframe()
     if (df == NULL)
     {
         printf("Error: Memory allocation failed!\n");
-        exit(1); } df->num_columns = 0; return df;
+        exit(1); 
+    }
+    df->num_columns = 0;
+    return df;
 } 
 
 void addColumn(CDataframe *df, const char *title) 
