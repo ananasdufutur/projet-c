@@ -41,3 +41,68 @@ int insert_value(COLUMN* col, int value)
 }
 
 void delete_column(COLUMN **col);
+
+void print_column(COLUMN* col)
+{
+    for (int i=0;i<col->taille_log;i++)
+    {
+        printf("%d",col->T+i);
+    }
+}
+
+int nb_occurrence(COLUMN * col,int x)
+{
+    int a=0;
+    for (int i=0;i<col->taille_log;i++)
+    {
+        if (*(col->T+i)==x)
+        {
+            a+=1;
+        }
+    }
+    return a;
+}
+
+int val_x(COLUMN * col,int x)
+{
+    return *(col->T+x);
+}
+
+int sup_x(COLUMN * col,int x)
+{
+    int a=0;
+    for (int i=0;i<col->taille_log;i++)
+    {
+        if (*(col->T+i)>x)
+        {
+            a+=1;
+        }
+    }
+    return a;
+}
+
+int inf_x(COLUMN * col,int x)
+{
+    int a=0;
+    for (int i=0;i<col->taille_log;i++)
+    {
+        if (*(col->T+i)<x)
+        {
+            a+=1;
+        }
+    }
+    return a;
+}
+
+int egale_x(COLUMN * col,int x)
+{
+    int a=0;
+    for (int i=0;i<col->taille_log;i++)
+    {
+        if (*(col->T+i)==x)
+        {
+            a+=1;
+        }
+    }
+    return a;
+}
