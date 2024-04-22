@@ -165,22 +165,194 @@ void freeCDataframe(CDataframe *df)
         }
     free(df);
 }
-int main()
+
+void ajout_col_data(COLUMN ** T,COLUMN * col)
 {
-    CDataframe *df = createCDataframe();
-    addColumn(df, "Column1");
-    addColumn(df, "Column2");
-    addColumn(df, "Column3");
-    for (int i = 0; i < 5; ++i)
+    int i=0;
+    while (T[i]!=0)
+    {
+        i++;
+    }
+    T[i+1]=col;
+}
+
+void renomm_col(COLUMN ** T,char * nom,char * nouveau_nom)
+{
+    int i=0;
+    while (T[i]!=0 && T[i]->nom!=nom)
+    {
+        i++;
+    }
+    if(T[i]->nom==nom)
+    {
+        T[i]->nom=nouveau_nom;
+    }
+}
+
+void suppr_col_data(COLUMN ** T,char * nom)
+{
+    int i=0;
+    while (T[i]->nom!=nom)
+    {
+        i++;
+    }
+    if (T[i]==NULL && T[i+1]==NULL)
+    {
+        printf("erreur colonne non trouvée");
+    }
+    else
+    {
+        if (T[i+1]==NULL)
         {
-            df->columns[0]->data[i] = i + 1;
-            df->columns[1]->data[i] = (i + 1) * 2;
-            df->columns[2]->data[i] = (i + 1) * 3;
-            df->columns[0]->logical_size++;
-            df->columns[1]->logical_size++;
-            df->columns[2]->logical_size++;
+            delete_column(T[i]);
         }
-    displayCDataframe(df);
-    freeCDataframe(df);
+        else
+        {
+            delete_column(T[i]);
+            while(T[i+1]!=NULL)
+            {
+                T[i+1]=T[i];
+            }
+        }
+    }
+}
+
+int recherche_val_data(COLUMN ** T,int val)
+{
+    int i=0;
+    while (T[i]!=0)
+    {
+        i++;
+    }
+    for (int j=0;j<i;j++)
+    {
+        for (int k=0;k<T[j]->taille_log;k++)
+        {
+            if (*(T[j]->T+k)==val)
+            {
+                return 1;
+            }
+        }
+    }
     return 0;
+}
+
+int return_val_data(COLUMN ** T,int ligne,int colonne)
+{
+    if (T[colonne]==NULL || ligne>T[colonne]->taille_log)
+    {
+        printf("index out of range");
+        return 0;
+    }
+    else
+    {
+
+        return *(T[colonne]->T+ligne);
+    }
+}
+
+void replace_val_data(COLUMN ** T,int ligne,int colonne,int val)
+{
+    if (T[colonne]==NULL || ligne>T[colonne]->taille_log)
+    {
+        printf("index out of range");
+    }
+    else
+    {
+        *(T[colonne]->T+ligne)=val;
+    }
+}
+
+void affich_nom_col_data(COLUMN ** T)
+{
+    int i=0;
+    while (T[i]!=NULL)
+    {
+        printf("%s",T[i]->nom);
+    }
+}
+
+void nb_ligne_colonne(COLUMN ** T)
+{
+    int i=0;
+    while(T[i]!=NULL)
+    {
+        i++;
+    }
+    if (T[0]->taille_log==0)
+    {
+        printf("%d,%d",0,i-1);
+    }
+    else
+    {
+        int j=0;
+        while(*(T[0]->T+j)!=0)
+        {
+            j++;
+        }
+        printf("%d,%d",j-1,i-1);
+    }
+}
+
+int nb_val_eg_x(COLUMN ** T,int x)
+{
+    int i=0;
+    int a=0;
+    while (T[i]!=0)
+    {
+        i++;
+    }
+    for (int j=0;j<i;j++)
+    {
+        for (int k=0;k<T[j]->taille_log;k++)
+        {
+            if (*(T[j]->T+k)==x)
+            {
+                a+=1;
+            }
+        }
+    }
+    return a;
+}
+
+int nb_val_sup_x(COLUMN ** T,int x)
+{
+    int i=0;
+    int a=0;
+    while (T[i]!=0)
+    {
+        i++;
+    }
+    for (int j=0;j<i;j++)
+    {
+        for (int k=0;k<T[j]->taille_log;k++)
+        {
+            if (*(T[j]->T+k)>x)
+            {
+                a+=1;
+            }
+        }
+    }
+    return a;
+}
+
+int nb_val_inf_x(COLUMN ** T,int x)
+{
+    int i=0;
+    int a=0;
+    while (T[i]!=0)
+    {
+        i++;
+    }
+    for (int j=0;j<i;j++)
+    {
+        for (int k=0;k<T[j]->taille_log;k++)
+        {
+            if (*(T[j]->T+k)<x)
+            {
+                a+=1;
+            }
+        }
+    }
+    return a;
 }
