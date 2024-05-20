@@ -1,20 +1,38 @@
 #include <stdio.h>
 #include "fonction.h"
+#include <string.h>
 // Created by pouss on 20/04/2024.
-//
+
+//Guillaume pousse:j'ai fais toutes les fonctions
+//fonction qui crée une colonne
 COLUMN *create_column(char* title)
 {
-    COLUMN C={NULL,0,0,title};
-    COLUMN * a = &C;
-    return a;
-}
+    COLUMN* col = (COLUMN*)malloc(sizeof(COLUMN));
+    col->nom =  (char*)malloc(strlen(title));
+    strcpy(col->nom, title);
 
+    //col->titre=strdup(title);
+    col -> T = malloc(256 * sizeof(int));
+    col -> taille_phy = 256;
+    col -> taille_log = 0;
+    return col;
+}
+//fonction qui renvoie un message si une valeur a été ajoutée avec succès a une colonne
+void value_added(int x)
+{
+    if(x)
+        printf("\n Value added successfully to my column\n");
+    else
+        printf("Error adding value to my column\n");
+}
+//fonction qui rajoute une valeure dans une colonne
 int insert_value(COLUMN* col, int value)
 {
     if (col->taille_phy>col->taille_log)
     {
-        col->taille_log+=1;
+
         *((col->T)+col->taille_log) =value;
+        col->taille_log+=1;
         return 1;
     }
     else
@@ -24,8 +42,9 @@ int insert_value(COLUMN* col, int value)
 
             col->T=(int *) malloc(256*sizeof(int ));
             col->taille_phy=256;
-            col->taille_log=1;
+
             *(col->T+col->taille_log)=value;
+            col->taille_log=1;
             return 1;
 
         }
@@ -33,23 +52,22 @@ int insert_value(COLUMN* col, int value)
         {
             col->T= realloc(col->T,col->taille_phy+256);
             col->taille_phy=col->taille_phy+256;
-            col->taille_log+=1;
+
             *(col->T+col->taille_log)=value;
+            col->taille_log+=1;
             return 1;
         }
     }
 }
-
-void delete_column(COLUMN **col);
-
+//fonction qui print les différentes valeurs d'une colonne
 void print_column(COLUMN* col)
 {
     for (int i=0;i<col->taille_log;i++)
     {
-        printf("%d",col->T+i);
+        printf("%d ",*(col->T+i));
     }
 }
-
+//fonction qui print le nombre d'occurrences d'une valeur dns une colonne
 int nb_occurrence(COLUMN * col,int x)
 {
     int a=0;
@@ -62,12 +80,12 @@ int nb_occurrence(COLUMN * col,int x)
     }
     return a;
 }
-
+//fonction qui cherche une valeur dans une colonne
 int val_x(COLUMN * col,int x)
 {
     return *(col->T+x);
 }
-
+//fonction qui compte le nombre de valeurs d'une colonne qui sont supérieures a x
 int sup_x(COLUMN * col,int x)
 {
     int a=0;
@@ -80,7 +98,7 @@ int sup_x(COLUMN * col,int x)
     }
     return a;
 }
-
+//fonction qui compte le nombre de valeurs d'une colonne qui sont inférieures a x
 int inf_x(COLUMN * col,int x)
 {
     int a=0;
@@ -93,7 +111,7 @@ int inf_x(COLUMN * col,int x)
     }
     return a;
 }
-
+//fonction qui compte le nombre de valeurs d'une colonne qui sont égales a x
 int egale_x(COLUMN * col,int x)
 {
     int a=0;
@@ -107,116 +125,74 @@ int egale_x(COLUMN * col,int x)
     return a;
 }
 
-CDataframe* createCDataframe() 
-{ 
-    CDataframe *df = (CDataframe*)malloc(sizeof(CDataframe));
-    if (df == NULL)
-    {
-        printf("Error: Memory allocation failed!\n");
-        exit(1); 
-    }
-    df->num_columns = 0;
-    return df;
-} 
 
-void addColumn(CDataframe *df, const char *title) 
-{
-    if (df->num_columns >= MAX_COLUMNS)
-    {
-        printf("Error: Maximum number of columns exceeded!\n");
-        exit(1);
-    }
-    Column *col = (Column*)malloc(sizeof(Column));
-    if (col == NULL)
-    {
-        printf("Error: Memory allocation failed!\n");
-        exit(1);
-    }
-    strcpy(col->title, title);
-    col->logical_size = 0;
-    col->physical_size = INITIAL_CAPACITY; col->data = (int*)malloc(INITIAL_CAPACITY * sizeof(int));
-    if (col->data == NULL) 
-    {
-        printf("Error: Memory allocation failed!\n");
-        exit(1); } df->columns[df->num_columns++] = col; 
-    }
-void displayCDataframe(CDataframe *df) 
-    {
-        printf("CDataframe Contents:\n");
-        for (int i = 0; i < df->num_columns; ++i)
-            {
-                printf("%s\t", df->columns[i]->title);
-            }
-        printf("\n");
-        for (int row = 0; row < df->columns[0]->logical_size; ++row)
-            {
-                for (int col = 0; col < df->num_columns; ++col) 
-                {
-                    printf("%d\t", df->columns[col]->data[row]);
-                }
-                printf("\n");
-            }
-    }
-void freeCDataframe(CDataframe *df) 
-{
-    for (int i = 0; i < df->num_columns; ++i)
-        {
-            free(df->columns[i]->data); free(df->columns[i]);
-        }
-    free(df);
-}
-
+//fonction qui ajoute une colonne a une liste de colonne
 void ajout_col_data(COLUMN ** T,COLUMN * col)
 {
+    if(T==NULL){
+        T=&col;
+    }
     int i=0;
     while (T[i]!=0)
     {
         i++;
     }
-    T[i+1]=col;
+    T[i]=col;
 }
-
+//fonction qui renomme une colonne d'une liste de colonne
 void renomm_col(COLUMN ** T,char * nom,char * nouveau_nom)
 {
     int i=0;
-    while (T[i]!=0 && T[i]->nom!=nom)
+    while (T[i]!=0 )
     {
-        i++;
+        if (T[i]->nom!=nom){
+            i++;
+        }
+        else{
+            break;
+        }
+
     }
     if(T[i]->nom==nom)
     {
         T[i]->nom=nouveau_nom;
     }
 }
-
+//fonction qui delete une colonne
+void delete_column(COLUMN ** col) {
+    free(*col);
+}
+//fonction qui delete une colonne d'une liste de colonne et qui avance d'un cran les colonnes suivantes
 void suppr_col_data(COLUMN ** T,char * nom)
 {
     int i=0;
-    while (T[i]->nom!=nom)
+    while (T[i]->nom!=nom && T[i]!=0)
     {
         i++;
     }
-    if (T[i]==NULL && T[i+1]==NULL)
+    if (T[i]==0 && T[i+1]==0)
     {
         printf("erreur colonne non trouvée");
     }
     else
     {
-        if (T[i+1]==NULL)
+        if (T[i+1]==0)
         {
-            delete_column(T[i]);
+            delete_column(T+i);
         }
         else
         {
-            delete_column(T[i]);
-            while(T[i+1]!=NULL)
+
+            delete_column(T+i);
+            while(T[i+1]!=0)
             {
-                T[i+1]=T[i];
+                T[i]=T[i+1];
+                i++;
             }
         }
     }
 }
-
+//fonction qui recherche une valeur dans une liste de colonnes
 int recherche_val_data(COLUMN ** T,int val)
 {
     int i=0;
@@ -236,7 +212,7 @@ int recherche_val_data(COLUMN ** T,int val)
     }
     return 0;
 }
-
+//fonction qui reourne la valeure a la ligne ligne et la colonne colonne
 int return_val_data(COLUMN ** T,int ligne,int colonne)
 {
     if (T[colonne]==NULL || ligne>T[colonne]->taille_log)
@@ -250,7 +226,7 @@ int return_val_data(COLUMN ** T,int ligne,int colonne)
         return *(T[colonne]->T+ligne);
     }
 }
-
+//fonction qui remplace une valeur a un cetain emplacement de notre dataframe(tableau de colonnes)
 void replace_val_data(COLUMN ** T,int ligne,int colonne,int val)
 {
     if (T[colonne]==NULL || ligne>T[colonne]->taille_log)
@@ -262,20 +238,20 @@ void replace_val_data(COLUMN ** T,int ligne,int colonne,int val)
         *(T[colonne]->T+ligne)=val;
     }
 }
-
+//fonction quifonction qui affiche le nom des colonnes d'un dataframe
 void affich_nom_col_data(COLUMN ** T)
 {
     int i=0;
-    while (T[i]!=NULL)
+    while (T[i]!=0)
     {
         printf("%s",T[i]->nom);
     }
 }
-
+//fonction qui affiche le nombre de colonnes d'un dataframe
 void nb_ligne_colonne(COLUMN ** T)
 {
     int i=0;
-    while(T[i]!=NULL)
+    while(T[i]!=0)
     {
         i++;
     }
@@ -293,7 +269,7 @@ void nb_ligne_colonne(COLUMN ** T)
         printf("%d,%d",j-1,i-1);
     }
 }
-
+//fonction qui retourn le nombre de valeurs du dataframe équivalentes a x
 int nb_val_eg_x(COLUMN ** T,int x)
 {
     int i=0;
@@ -314,7 +290,7 @@ int nb_val_eg_x(COLUMN ** T,int x)
     }
     return a;
 }
-
+//fonction qui revoie le nombre de valeurs du dataframe supérieures a x
 int nb_val_sup_x(COLUMN ** T,int x)
 {
     int i=0;
@@ -335,7 +311,7 @@ int nb_val_sup_x(COLUMN ** T,int x)
     }
     return a;
 }
-
+//fonction qui revoie le nombre de valeurs du dataframe inférieures a x
 int nb_val_inf_x(COLUMN ** T,int x)
 {
     int i=0;
